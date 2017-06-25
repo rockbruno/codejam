@@ -27,5 +27,36 @@ final class Reader {
 let input = Reader.read()
 //
 
-let output = input.joined(separator: "\n")
+var output = ""
+
+func decrypt(_ word: String) -> String {
+    let chars = Array(word.characters)
+    var r = String(chars[0])
+    var unis: [Int] = [Int(UnicodeScalar(String(chars[0]))!.value) - 65]
+    for i in 1..<chars.count-2 {
+        let before = Int(UnicodeScalar(String(chars[i-1]))!.value) - 65
+        let next = Int(UnicodeScalar(String(chars[i+1]))!.value) - 65
+        let sum = 26 - (before + next)
+        let rightCharacter = (before - next % 26) + sum
+        unis.append(rightCharacter)
+        r += String(describing: UnicodeScalar(rightCharacter+65)!)
+    }
+    let secondCharUnicode = Int(UnicodeScalar(String(chars[1]))!.value) - 65
+    let lastCharUnicode = Int(UnicodeScalar(String(chars[chars.count-2]))!.value) - 65
+    let firstCharacterUni = (secondCharUnicode + 26) - unis[1]
+    let lastCharacterUni = abs(unis[unis.count-2] - (lastCharUnicode + 26))
+    let f = String(describing: UnicodeScalar(firstCharacterUni+65)!)
+    let l = String(describing: UnicodeScalar(lastCharacterUni+65)!)
+    return f + r + l
+}
+
+for i in 1..<input.count {
+    output += "Case #\(i): \(decrypt(input[i]))"
+    if i != input.count - 1 {
+        output += "\n"
+    }
+}
+
+print(output)
+
 Reader.write(output)
